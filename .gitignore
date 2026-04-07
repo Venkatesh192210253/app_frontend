@@ -13,3 +13,12 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Python
+.env
+__pycache__/
+*.py[cod]
+*$py.class
+backend/venv/
+backend/db.sqlite3
+backend/django_errors.log

@@ -1,4 +1,5 @@
 from rest_framework import generics, status
+from django.conf import settings
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -310,7 +311,7 @@ class SmartSwapsView(APIView):
             food_name = recent_entry.food_name if recent_entry else "White Bread"
         
         # 2. Call AI for a better alternative
-        groq_api_key = os.environ.get("GROQ_API_KEY")
+        groq_api_key = settings.GROQ_API_KEY
         if not groq_api_key:
             return Response({
                 "current_food": food_name,

@@ -20,5 +20,6 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "My Fitness Buddy"
-include(":app")
+include(":frontend")
+
  

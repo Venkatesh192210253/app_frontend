@@ -1,4 +1,5 @@
 from rest_framework import generics, status
+from django.conf import settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -49,7 +50,7 @@ class AiFoodSearchView(APIView):
             return Response(serializer.data)
 
         # 2. Call Groq for AI search
-        groq_api_key = os.environ.get("GROQ_API_KEY")
+        groq_api_key = settings.GROQ_API_KEY
         log_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), "ai_debug.log")
         from datetime import datetime
 
@@ -213,8 +214,8 @@ class AiPhotoFoodScanView(APIView):
             print(f"Error during image processing: {str(e)}")
             return Response({"error": f"Image processing failed: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # 2. Call Groq Vision API
-        groq_api_key = os.environ.get("GROQ_API_KEY")
+        # 2. Call Groq for API efficiency
+        groq_api_key = settings.GROQ_API_KEY
         log_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), "ai_debug.log")
         
         if not groq_api_key:
@@ -354,7 +355,7 @@ class BarcodeLookupView(APIView):
         # For now, let's use the Groq AI to 'identify' what this barcode is if not in DB.
         # In a real app, you'd use OpenFoodFacts API.
         
-        groq_api_key = os.environ.get("GROQ_API_KEY")
+        groq_api_key = settings.GROQ_API_KEY
         log_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), "ai_debug.log")
         from datetime import datetime
 

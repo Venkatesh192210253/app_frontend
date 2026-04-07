@@ -589,7 +589,7 @@ def ai_food_search_json(request):
     if not query:
         return JsonResponse([], safe=False)
         
-    groq_api_key = os.getenv("GROQ_API_KEY")
+    groq_api_key = settings.GROQ_API_KEY
     prompt = f"""
     Search for food items matching: "{query}".
     The first item MUST be the most direct and common version of "{query}".
@@ -644,6 +644,7 @@ def ai_food_search_json(request):
 @login_required(login_url='login')
 def friends_view(request):
     from users.models import Friend, FriendRequest, Group, Challenge, DailyStats, User
+    from diary.models import WorkoutLog
     
     # Process actions like accept/reject/send friend requests
     if request.method == 'POST':
@@ -710,7 +711,6 @@ def friends_view(request):
     
     leaderboard_stats_l = []
     for stat_l in raw_leaderboard_stats:
-        from diary.models import WorkoutLog
         workouts_l = WorkoutLog.objects.filter(user=stat_l.userid, date=today_f)
         burned_kcal_l = workouts_l.aggregate(total=Sum('calories_burned'))['total'] or 0
         

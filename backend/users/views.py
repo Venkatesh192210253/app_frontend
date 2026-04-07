@@ -1493,9 +1493,9 @@ def chat_with_ai(request):
     if not user_message:
         return Response({"error": "Message is required"}, status=status.HTTP_400_BAD_REQUEST)
         
-    groq_api_key = os.environ.get("GROQ_API_KEY")
+    groq_api_key = settings.GROQ_API_KEY
     if not groq_api_key:
-        return Response({"error": "GROQ_API_KEY environment variable not set"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response({"error": "GROQ_API_KEY setting not found"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
     system_prompt = (
         "You are an AI assistant for a fitness and social app.\n"

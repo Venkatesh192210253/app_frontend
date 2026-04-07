@@ -24,10 +24,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-2641#2a28eo)28xm%n5&4462rrl2w^lyx=%td3p7iu_&g0ae*-'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = ['*']
 
@@ -194,12 +194,15 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'Venkateshchennareddy533@gmail.com'
-EMAIL_HOST_PASSWORD = 'mmjn doik jskv fxya'
-DEFAULT_FROM_EMAIL = 'MyFitnessBuddy <Venkateshchennareddy533@gmail.com>'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = f'MyFitnessBuddy <{EMAIL_HOST_USER}>'
 
 # Fast2SMS Settings
-FAST2SMS_API_KEY = 'pwT5R13jiV6nyQvFdZYz9oO8L4U2hDqBlkCemPMtxs0EbGJANWOUeM9otRsru7NiTWXcFEZfhGpb0jHg'
+FAST2SMS_API_KEY = os.getenv('FAST2SMS_API_KEY')
+
+# Groq Settings
+GROQ_API_KEY = os.getenv('GROQ_API_KEY')
 
 LOGGING = {
     'version': 1,
