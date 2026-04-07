@@ -64,12 +64,18 @@ fun AuthFlow(
 
     NavHost(
         navController = navController, 
-        startDestination = "login",
+        startDestination = "subscription",
         enterTransition = { fadeIn(animationSpec = tween(400)) + slideInHorizontally(initialOffsetX = { it / 2 }) },
         exitTransition = { fadeOut(animationSpec = tween(400)) + slideOutHorizontally(targetOffsetX = { -it / 2 }) },
         popEnterTransition = { fadeIn(animationSpec = tween(400)) + slideInHorizontally(initialOffsetX = { -it / 2 }) },
         popExitTransition = { fadeOut(animationSpec = tween(400)) + slideOutHorizontally(targetOffsetX = { it / 2 }) }
     ) {
+        composable("subscription") {
+            SubscriptionScreen(
+                onSignInClick = { navController.navigate("login") },
+                onSkipClick = { navController.navigate("login") }
+            )
+        }
         composable("login") {
             LoginMainScreen(
                 viewModel = viewModel,
