@@ -62,7 +62,7 @@ class LogWorkoutViewModel : ViewModel() {
     val uiState: StateFlow<LogWorkoutUiState> = _uiState.asStateFlow()
 
     private var startTimeMillis: Long = 0
-    private var userWeightKg: Float = 70f // Default fallback
+    private var userWeightKg: Float = 0f // Default fallback
 
     init {
         fetchUserWeight()
@@ -78,7 +78,7 @@ class LogWorkoutViewModel : ViewModel() {
                     }
                 }
             } catch (e: Exception) {
-                // Ignore, use fallback
+                // Ignore, use fallback (0kg)
             }
         }
     }

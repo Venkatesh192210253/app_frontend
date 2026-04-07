@@ -155,10 +155,10 @@ class WorkoutDetailViewModel : ViewModel() {
             }
             val newlyCompleted = newExercises.count { it.isCompleted }
             
-            // Calculate accurate calories using Generic MET (5f) * Weight (70kg fallback) * Duration
+            // Calculate accurate calories using Generic MET (5f) * Weight * Duration
             val durationMins = workout.duration.replace(Regex("[^0-9]"), "").toIntOrNull() ?: 60
             val metValue = 5f
-            val userWeightKg = 70f
+            val userWeightKg = com.simats.myfitnessbuddy.data.local.SettingsManager.currentWeight.toFloatOrNull() ?: 0f
             val totalPossibleCalories = metValue * userWeightKg * (durationMins / 60f)
             
             val totalCount = newExercises.size

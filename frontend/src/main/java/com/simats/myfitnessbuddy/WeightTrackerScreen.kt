@@ -284,7 +284,7 @@ fun WeightTrackerScreen(
                             }
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Text(
-                                    text = if (animWeight > 0.1f) "%.1f".format(animWeight) else "0.0",
+                                    text = if (animWeight > 0.1f) "%.1f".format(animWeight) else "--",
                                     fontSize = 42.sp,
                                     fontWeight = FontWeight.ExtraBold,
                                     color = Color.DarkGray

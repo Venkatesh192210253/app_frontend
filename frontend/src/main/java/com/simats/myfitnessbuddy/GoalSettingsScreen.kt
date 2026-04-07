@@ -138,8 +138,20 @@ fun GoalSettingsScreen(
                 GoalSectionCard(title = "Weight Goals") {
                     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                            Box(modifier = Modifier.weight(1f)) { GoalInputField("Current Weight (kg)", uiState.currentWeight) { viewModel.updateCurrentWeight(it) } }
-                            Box(modifier = Modifier.weight(1f)) { GoalInputField("Target Weight (kg)", uiState.targetWeight) { viewModel.updateTargetWeight(it) } }
+                            Box(modifier = Modifier.weight(1f)) { 
+                                GoalInputField(
+                                    label = "Current Weight (kg)", 
+                                    value = uiState.currentWeight,
+                                    placeholder = "Enter current weight"
+                                ) { viewModel.updateCurrentWeight(it) } 
+                            }
+                            Box(modifier = Modifier.weight(1f)) { 
+                                GoalInputField(
+                                    label = "Target Weight (kg)", 
+                                    value = uiState.targetWeight,
+                                    placeholder = "Enter target weight"
+                                ) { viewModel.updateTargetWeight(it) } 
+                            }
                         }
                         GoalInputField("Weekly Goal (kg per week)", uiState.weeklyGoal) { viewModel.updateWeeklyGoal(it) }
                         
@@ -194,13 +206,23 @@ fun GoalSettingsScreen(
                     text = "Save Goals",
                     isLoading = uiState.isSaving,
                     onClick = {
-                        viewModel.validateAndSave { success ->
+                        if (uiState.currentWeight.isEmpty()) {
                             scope.launch {
-                                if (success) {
-                                    snackbarHostState.showSnackbar("Goals saved successfully!")
-                                    onBack()
-                                } else {
-                                    snackbarHostState.showSnackbar("Failed to save goals. Please try again.")
+                                snackbarHostState.showSnackbar("Please enter your current weight")
+                            }
+                        } else if (uiState.targetWeight.isEmpty()) {
+                            scope.launch {
+                                snackbarHostState.showSnackbar("Please enter your goal weight")
+                            }
+                        } else {
+                            viewModel.validateAndSave { success ->
+                                scope.launch {
+                                    if (success) {
+                                        snackbarHostState.showSnackbar("Goals saved successfully!")
+                                        onBack()
+                                    } else {
+                                        snackbarHostState.showSnackbar("Failed to save goals. Please try again.")
+                                    }
                                 }
                             }
                         }
@@ -303,13 +325,19 @@ fun GoalChip(label: String, isSelected: Boolean, modifier: Modifier = Modifier, 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GoalInputField(label: String, value: String, onValueChange: (String) -> Unit) {
+fun GoalInputField(
+    label: String, 
+    value: String, 
+    placeholder: String = "",
+    onValueChange: (String) -> Unit
+) {
     Column {
         Text(label, fontSize = 12.sp, fontWeight = FontWeight.Medium, color = Color.Gray, modifier = Modifier.padding(start = 4.dp, bottom = 4.dp))
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
             modifier = Modifier.fillMaxWidth(),
+            placeholder = if (placeholder.isNotEmpty()) { { Text(placeholder, color = Color.LightGray) } } else null,
             shape = RoundedCornerShape(12.dp),
             singleLine = true,
             colors = TextFieldDefaults.outlinedTextFieldColors(

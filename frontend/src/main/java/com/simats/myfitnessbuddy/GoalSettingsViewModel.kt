@@ -18,8 +18,8 @@ enum class UserGoal {
 
 data class GoalSettingsUiState(
     val primaryGoal: UserGoal = UserGoal.BuildMuscle,
-    val currentWeight: String = "0",
-    val targetWeight: String = "0",
+    val currentWeight: String = "",
+    val targetWeight: String = "",
     val weeklyGoal: String = "0.5",
     val currentBodyFat: String = "18",
     val targetBodyFat: String = "15",
@@ -54,8 +54,8 @@ class GoalSettingsViewModel : ViewModel() {
                     _uiState.update {
                         it.copy(
                             primaryGoal = UserGoal.valueOf(body.primary_goal),
-                            currentWeight = body.current_weight.toString(),
-                            targetWeight = body.target_weight.toString(),
+                            currentWeight = if (body.current_weight == 0.0) "" else body.current_weight.toString(),
+                            targetWeight = if (body.target_weight == 0.0) "" else body.target_weight.toString(),
                             weeklyGoal = body.weekly_goal_weight.toString(),
                             currentBodyFat = body.current_body_fat.toString(),
                             targetBodyFat = body.target_body_fat.toString(),
@@ -85,8 +85,8 @@ class GoalSettingsViewModel : ViewModel() {
         _uiState.update {
             it.copy(
                 dailyCalorieTarget = SettingsManager.calorieGoal,
-                currentWeight = SettingsManager.currentWeight,
-                targetWeight = SettingsManager.targetWeight,
+                currentWeight = if (SettingsManager.currentWeight == "0" || SettingsManager.currentWeight == "0.0") "" else SettingsManager.currentWeight,
+                targetWeight = if (SettingsManager.targetWeight == "0" || SettingsManager.targetWeight == "0.0") "" else SettingsManager.targetWeight,
                 weeklyGoal = SettingsManager.weeklyGoal,
                 proteinG = SettingsManager.protein,
                 carbsG = SettingsManager.carbs,
@@ -126,6 +126,11 @@ class GoalSettingsViewModel : ViewModel() {
     fun updateAdaptiveMode(value: Boolean) { _uiState.update { it.copy(isAdaptiveEnabled = value) } }
 
     fun validateAndSave(onComplete: (Boolean) -> Unit) {
+        if (_uiState.value.currentWeight.isEmpty()) {
+            onComplete(false)
+            return
+        }
+
         // Simple persistence logic fallback
         SettingsManager.calorieGoal = _uiState.value.dailyCalorieTarget
         SettingsManager.currentWeight = _uiState.value.currentWeight

@@ -50,7 +50,6 @@ fun EditProfileScreen(
     var age by remember { mutableStateOf(userProfile.age) }
     var gender by remember { mutableStateOf(userProfile.gender) }
     var height by remember { mutableStateOf(userProfile.height) }
-    var weight by remember { mutableStateOf(userProfile.weight) }
     var username by remember { mutableStateOf(userProfile.username) }
     var bio by remember { mutableStateOf(userProfile.bio) }
     var profilePictureUri by remember { mutableStateOf(userProfile.profilePictureUri) }
@@ -75,7 +74,7 @@ fun EditProfileScreen(
         if (userProfile.age.isNotEmpty() || age.isEmpty()) age = userProfile.age
         if (userProfile.gender.isNotEmpty() || gender.isEmpty()) gender = userProfile.gender
         if (userProfile.height.isNotEmpty() || height.isEmpty()) height = userProfile.height
-        if (userProfile.weight.isNotEmpty() || weight.isEmpty()) weight = userProfile.weight
+        
         if (userProfile.username.isNotEmpty() || username.isEmpty()) username = userProfile.username
         if (userProfile.bio.isNotEmpty() || bio.isEmpty()) bio = userProfile.bio
         if (userProfile.profilePictureUri != null || profilePictureUri == null) profilePictureUri = userProfile.profilePictureUri
@@ -164,9 +163,8 @@ fun EditProfileScreen(
                         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                             Text("Body Metrics", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color.DarkGray)
                             
-                            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                                Box(modifier = Modifier.weight(1f)) { EditField("Height (cm)", height) { height = it } }
-                                Box(modifier = Modifier.weight(1f)) { EditField("Weight (kg)", weight) { weight = it } }
+                            Row(modifier = Modifier.fillMaxWidth()) {
+                                Box(modifier = Modifier.fillMaxWidth()) { EditField("Height (cm)", height) { height = it } }
                             }
                         }
                     }
@@ -201,7 +199,6 @@ fun EditProfileScreen(
                                 age = age,
                                 gender = gender,
                                 height = height,
-                                weight = weight,
                                 username = username,
                                 bio = bio,
                                 initials = if (name.isNotEmpty()) name.take(1).uppercase() + (if (name.contains(" ")) name.split(" ").last().take(1).uppercase() else "") else "U",
@@ -277,13 +274,20 @@ fun ProfileHeaderEdit(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditField(label: String, value: String, singleLine: Boolean = true, onValueChange: (String) -> Unit) {
+fun EditField(
+    label: String, 
+    value: String, 
+    placeholder: String = "",
+    singleLine: Boolean = true, 
+    onValueChange: (String) -> Unit
+) {
     Column {
         Text(label, fontSize = 12.sp, fontWeight = FontWeight.Medium, color = Color.Gray, modifier = Modifier.padding(start = 4.dp, bottom = 4.dp))
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
             modifier = Modifier.fillMaxWidth(),
+            placeholder = if (placeholder.isNotEmpty()) { { Text(placeholder, color = Color.LightGray) } } else null,
             shape = RoundedCornerShape(12.dp),
             singleLine = singleLine,
             colors = TextFieldDefaults.outlinedTextFieldColors(

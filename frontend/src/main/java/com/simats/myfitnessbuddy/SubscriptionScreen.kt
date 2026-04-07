@@ -126,7 +126,7 @@ fun SubscriptionScreen(
         
         PlanCard(
             title = "Monthly",
-            price = "₹799/mo",
+            price = "₹199/mo",
             isSelected = selectedPlan == 0,
             onClick = { selectedPlan = 0 }
         )
@@ -135,8 +135,8 @@ fun SubscriptionScreen(
         
         PlanCard(
             title = "Yearly (Best Value)",
-            price = "₹5,999/yr",
-            subtitle = "Save 33% compared to monthly",
+            price = "₹1,299/yr",
+            subtitle = "Save 45% compared to monthly",
             isSelected = selectedPlan == 1,
             onClick = { selectedPlan = 1 }
         )
@@ -145,7 +145,7 @@ fun SubscriptionScreen(
         
         PlanCard(
             title = "Lifetime Access",
-            price = "₹12,499",
+            price = "₹3,999",
             subtitle = "One-time payment, forever access",
             isSelected = selectedPlan == 2,
             onClick = { selectedPlan = 2 }
@@ -160,7 +160,7 @@ fun SubscriptionScreen(
             containerColor = AccentGreen
         ) {
             Text(
-                "Sign in for Free", 
+                "Start Premium", 
                 color = Color.White, 
                 fontWeight = FontWeight.Bold, 
                 fontSize = 18.sp
