@@ -126,7 +126,7 @@ fun SubscriptionScreen(
         
         PlanCard(
             title = "Monthly",
-            price = "$9.99/mo",
+            price = "₹799/mo",
             isSelected = selectedPlan == 0,
             onClick = { selectedPlan = 0 }
         )
@@ -135,7 +135,7 @@ fun SubscriptionScreen(
         
         PlanCard(
             title = "Yearly (Best Value)",
-            price = "$79.99/yr",
+            price = "₹5,999/yr",
             subtitle = "Save 33% compared to monthly",
             isSelected = selectedPlan == 1,
             onClick = { selectedPlan = 1 }
@@ -145,7 +145,7 @@ fun SubscriptionScreen(
         
         PlanCard(
             title = "Lifetime Access",
-            price = "$149.99",
+            price = "₹12,499",
             subtitle = "One-time payment, forever access",
             isSelected = selectedPlan == 2,
             onClick = { selectedPlan = 2 }

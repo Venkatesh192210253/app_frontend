@@ -83,8 +83,8 @@ class DashboardViewModel : ViewModel() {
     private val _dashboardData = MutableStateFlow<DashboardDataResponse?>(null)
     val dashboardData: StateFlow<DashboardDataResponse?> = _dashboardData.asStateFlow()
     // Stats Cards
-    val caloriesBurned = mutableStateOf(450)
-    val burnedVsLastWeek = mutableStateOf(12) // Percentage increase
+    val caloriesBurned = mutableStateOf(0)
+    val burnedVsLastWeek = mutableStateOf(0) // Percentage increase
     // Weekly Macro Data
     val weeklyData = androidx.compose.runtime.mutableStateListOf<com.simats.myfitnessbuddy.data.remote.WeeklyMacroResponse>()
     val selectedDayIndex = mutableStateOf(6)
@@ -118,9 +118,9 @@ class DashboardViewModel : ViewModel() {
     }
     fun refreshSettings() {
         calorieGoal.value = com.simats.myfitnessbuddy.data.local.SettingsManager.calorieGoal.toIntOrNull() ?: 2200
-        currentWeight.value = com.simats.myfitnessbuddy.data.local.SettingsManager.currentWeight.toFloatOrNull() ?: 72f
-        startWeight.value = com.simats.myfitnessbuddy.data.local.SettingsManager.startWeight.toFloatOrNull() ?: 75f
-        targetWeight.value = com.simats.myfitnessbuddy.data.local.SettingsManager.targetWeight.toFloatOrNull() ?: 70f
+        currentWeight.value = com.simats.myfitnessbuddy.data.local.SettingsManager.currentWeight.toFloatOrNull() ?: 0f
+        startWeight.value = com.simats.myfitnessbuddy.data.local.SettingsManager.startWeight.toFloatOrNull() ?: 0f
+        targetWeight.value = com.simats.myfitnessbuddy.data.local.SettingsManager.targetWeight.toFloatOrNull() ?: 0f
         // Refresh steps from local storage (updated by service)
         val localSteps = com.simats.myfitnessbuddy.data.local.SettingsManager.totalStepsToday
         val goal = com.simats.myfitnessbuddy.data.local.SettingsManager.stepGoal

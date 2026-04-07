@@ -52,20 +52,16 @@ data class WorkoutUiState(
         WorkoutType("yoga", "Yoga", Icons.Default.SelfImprovement, 3f)
     ),
     // Dashboard Specific State
-    val thisWeekWorkouts: Int = 4,
-    val totalTimeMinutes: Int = 240,
-    val totalCaloriesBurned: Int = 1650,
-    val currentWorkout: String = "Upper Body Power",
-    val currentWorkoutTime: Int = 60,
-    val exercisesCompleted: Int = 3,
-    val totalExercises: Int = 8,
-    val caloriesTarget: Int = 450,
-    val caloriesCurrent: Int = 245,
-    val recentWorkouts: List<WorkoutSession> = listOf(
-        WorkoutSession("Leg Day", 420, "55 min"),
-        WorkoutSession("Pull Day", 380, "50 min"),
-        WorkoutSession("Push Day", 450, "60 min")
-    ),
+    val thisWeekWorkouts: Int = 0,
+    val totalTimeMinutes: Int = 0,
+    val totalCaloriesBurned: Int = 0,
+    val currentWorkout: String = "Rest Day",
+    val currentWorkoutTime: Int = 0,
+    val exercisesCompleted: Int = 0,
+    val totalExercises: Int = 0,
+    val caloriesTarget: Int = 2000,
+    val caloriesCurrent: Int = 0,
+    val recentWorkouts: List<WorkoutSession> = emptyList(),
     val programs: List<WorkoutProgram> = listOf(
         WorkoutProgram("chest", "Chest & Triceps", Icons.Default.FitnessCenter, Color(0xFF22C55E)),
         WorkoutProgram("back", "Back & Biceps", Icons.Default.FitnessCenter, Color(0xFF22C55E)),
@@ -114,7 +110,7 @@ class WorkoutViewModel : ViewModel() {
                     }
                     
                     val todayStr = LocalDate.now().toString()
-                    val todayLog = data?.recentWorkouts?.firstOrNull { it.date == todayStr || it.created_at?.startsWith(todayStr) == true }
+                    val todayLog = data?.recentWorkouts?.find { it.date == todayStr || it.created_at?.startsWith(todayStr) == true }
                     
                     var totalExercisesCount = 8
                     val completedExercises = todayLog?.exercises?.count { it.is_completed } ?: 0
@@ -127,23 +123,48 @@ class WorkoutViewModel : ViewModel() {
                             totalExercisesCount = matchedTemplate.exercises.size
                         }
                     }
+                    
+                    val todayCalories = todayLog?.calories_burned ?: 0
+                    val dailyTarget = dashRes.isSuccessful.let { if(it) dashRes.body()?.goal_settings?.daily_calorie_target ?: 2000 else 2000 }
+                    
+                    // If no workout yet today, try to get today's scheduled workout name
+                    var displayWorkout = workoutType
+                    if (todayLog == null) {
+                        try {
+                            val todayTemplate = RetrofitClient.apiService.getTodayWorkout()
+                            if (todayTemplate.isSuccessful) {
+                                todayTemplate.body()?.name?.let { displayWorkout = it }
+                            }
+                        } catch(e: Exception) {}
+                    }
 
                     _uiState.update { state -> 
                         state.copy(
-                            currentWorkout = workoutType,
+                            currentWorkout = displayWorkout,
                             exercisesCompleted = completedExercises,
-                            totalExercises = totalExercisesCount,
+                            totalExercises = if (totalExercisesCount > 0) totalExercisesCount else 8,
+                            caloriesCurrent = todayCalories,
+                            caloriesTarget = dailyTarget,
                             recentWorkouts = recentLogs ?: state.recentWorkouts,
                             aiSuggestionMessage = suggestionMsg,
                             // Calculate weekly stats from logs
                             thisWeekWorkouts = data?.recentWorkouts?.filter { 
-                                try { java.time.LocalDate.parse(it.date).isAfter(java.time.LocalDate.now().minusDays(7)) } catch(e: Exception) { false }
+                                try { 
+                                    val logDate = it.date ?: it.created_at?.split("T")?.get(0)
+                                    java.time.LocalDate.parse(logDate).isAfter(java.time.LocalDate.now().minusDays(7)) 
+                                } catch(e: Exception) { false }
                             }?.size ?: 0,
                             totalTimeMinutes = data?.recentWorkouts?.filter { 
-                                try { java.time.LocalDate.parse(it.date).isAfter(java.time.LocalDate.now().minusDays(7)) } catch(e: Exception) { false }
+                                try { 
+                                    val logDate = it.date ?: it.created_at?.split("T")?.get(0)
+                                    java.time.LocalDate.parse(logDate).isAfter(java.time.LocalDate.now().minusDays(7)) 
+                                } catch(e: Exception) { false }
                             }?.sumOf { it.duration_minutes } ?: 0,
                             totalCaloriesBurned = data?.recentWorkouts?.filter { 
-                                try { java.time.LocalDate.parse(it.date).isAfter(java.time.LocalDate.now().minusDays(7)) } catch(e: Exception) { false }
+                                try { 
+                                    val logDate = it.date ?: it.created_at?.split("T")?.get(0)
+                                    java.time.LocalDate.parse(logDate).isAfter(java.time.LocalDate.now().minusDays(7)) 
+                                } catch(e: Exception) { false }
                             }?.sumOf { it.calories_burned } ?: 0
                         )
                     }
@@ -172,7 +193,7 @@ class WorkoutViewModel : ViewModel() {
     private fun calculateCalories() {
         val state = _uiState.value
         val workout = state.selectedWorkout ?: return
-        val weight = 72f
+        val weight = com.simats.myfitnessbuddy.data.local.SettingsManager.currentWeight.toFloatOrNull() ?: 0f
         val burn = (workout.metValue * weight * (state.durationMinutes / 60f) * state.intensity).toInt()
         _uiState.update { it.copy(caloriesBurned = burn) }
     }

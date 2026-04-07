@@ -284,7 +284,7 @@ fun WeightTrackerScreen(
                             }
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Text(
-                                    text = if (animWeight > 0.1f) "%.1f".format(animWeight) else "--",
+                                    text = if (animWeight > 0.1f) "%.1f".format(animWeight) else "0.0",
                                     fontSize = 42.sp,
                                     fontWeight = FontWeight.ExtraBold,
                                     color = Color.DarkGray
@@ -522,7 +522,7 @@ fun WeightTrackerScreen(
                             OutlinedTextField(
                                 value = weightInput,
                                 onValueChange = { weightInput = it },
-                                placeholder = { Text("e.g. 72.5", color = Color.Gray) },
+                                placeholder = { Text("e.g. 0.0", color = Color.Gray) },
                                 suffix = { Text("kg", fontWeight = FontWeight.Bold) },
                                 modifier = Modifier.weight(1f),
                                 shape = RoundedCornerShape(12.dp),

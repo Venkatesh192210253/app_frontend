@@ -18,8 +18,8 @@ enum class UserGoal {
 
 data class GoalSettingsUiState(
     val primaryGoal: UserGoal = UserGoal.BuildMuscle,
-    val currentWeight: String = "72",
-    val targetWeight: String = "75",
+    val currentWeight: String = "0",
+    val targetWeight: String = "0",
     val weeklyGoal: String = "0.5",
     val currentBodyFat: String = "18",
     val targetBodyFat: String = "15",
@@ -141,8 +141,8 @@ class GoalSettingsViewModel : ViewModel() {
             try {
                 val requestBody = GoalSettingsResponse(
                     primary_goal = _uiState.value.primaryGoal.name,
-                    current_weight = _uiState.value.currentWeight.toDoubleOrNull() ?: 72.0,
-                    target_weight = _uiState.value.targetWeight.toDoubleOrNull() ?: 75.0,
+                    current_weight = _uiState.value.currentWeight.toDoubleOrNull() ?: 0.0,
+                    target_weight = _uiState.value.targetWeight.toDoubleOrNull() ?: 0.0,
                     weekly_goal_weight = _uiState.value.weeklyGoal.toDoubleOrNull() ?: 0.5,
                     current_body_fat = _uiState.value.currentBodyFat.toDoubleOrNull() ?: 18.0,
                     target_body_fat = _uiState.value.targetBodyFat.toDoubleOrNull() ?: 15.0,

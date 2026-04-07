@@ -52,7 +52,7 @@ data class UserProfile(
     val age: String = "",
     val gender: String = "",
     val height: String = "",
-    val weight: String = "",
+    val weight: String = "0",
     val username: String = "",
     val bio: String = "",
     val initials: String = "",
@@ -74,6 +74,7 @@ class ProfileViewModel : ViewModel() {
         } else if (SettingsManager.userName.isNotEmpty()) {
             SettingsManager.userName.take(1).uppercase()
         } else "U",
+        weight = SettingsManager.currentWeight,
         profilePictureUri = SettingsManager.profilePictureUri
     ))
     val userProfile: StateFlow<UserProfile> = _userProfile.asStateFlow()
@@ -106,13 +107,16 @@ class ProfileViewModel : ViewModel() {
                         SettingsManager.userName = updatedUsername
                         SettingsManager.userEmail = updatedEmail
                         
-                        current.copy(
+                        val serverWeight = profile.current_weight?.toString()
+                        val finalWeight = serverWeight ?: SettingsManager.currentWeight
+                        
+                        val updatedProfile = current.copy(
                             name = updatedFullName,
                             username = updatedUsername,
                             age = profile.age?.toString() ?: current.age,
                             gender = profile.gender ?: current.gender,
                             height = profile.height_cm?.toString() ?: current.height,
-                            weight = profile.current_weight?.toString() ?: current.weight,
+                            weight = finalWeight,
                             bio = profile.profile?.bio ?: current.bio,
                             email = updatedEmail,
                             phone = profile.phone_number ?: current.phone,
@@ -129,6 +133,13 @@ class ProfileViewModel : ViewModel() {
                                 if (it.startsWith("http")) it else RetrofitClient.BASE_URL.removeSuffix("/") + it 
                             } ?: current.profilePictureUri
                         )
+
+                        // If server hasn't saved weight yet (new account), persist the default "0"
+                        if (serverWeight == null) {
+                            updateProfile(updatedProfile)
+                        }
+                        
+                        updatedProfile
                     }
                 }
             } catch (e: Exception) {
@@ -317,6 +328,26 @@ fun ProfileScreen(
                 item { ProfileHeaderCard(userProfile) }
                 item { StatsRow(userProfile, onNavigateToStats, onNavigateToAchievements) }
                 item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth().shadow(2.dp, RoundedCornerShape(20.dp)),
+                        shape = RoundedCornerShape(20.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color.White)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(Icons.Default.MonitorWeight, contentDescription = null, tint = Color(0xFF4CAF50))
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Text("Current Weight", fontWeight = FontWeight.Medium)
+                            }
+                            Text("${userProfile.weight} kg", fontWeight = FontWeight.Bold, color = Color(0xFF2E7D32))
+                        }
+                    }
+                }
+                item {
                     Text(
                         "Account Settings",
                         fontWeight = FontWeight.Bold,
@@ -448,8 +479,8 @@ fun StatsRow(user: UserProfile, onNavigateToStats: () -> Unit, onNavigateToAchie
         horizontalArrangement = Arrangement.SpaceAround
     ) {
         StatItem(Icons.Default.LocalFireDepartment, user.streak.toString(), "Day Streak", Color(0xFF4CAF50), onNavigateToStats)
+        StatItem(Icons.Default.MonitorWeight, user.weight, "Weight (kg)", Color(0xFFE91E63), onNavigateToStats)
         StatItem(Icons.Default.EmojiEvents, user.achievements.toString(), "Achievements", Color(0xFF2196F3), onNavigateToAchievements)
-        StatItem(Icons.Default.Star, "Lvl ${user.level}", "Level", Color(0xFFFFB300), {})
     }
 }
 
